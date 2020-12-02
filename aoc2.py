@@ -6,7 +6,6 @@ Created on Wed Dec  2 08:27:54 2020
 """
 
 from re import compile
-from collections import Counter
 
 with open('inputs/input2.txt') as fh:
   lines = fh.readlines()
@@ -18,8 +17,7 @@ pwds = 0
 for line in lines:
   parsed = parser.search(line)
   least, most, char, pwd = parsed.groups()  
-  stats = Counter(pwd)
-  if int(least) <= stats[char] <= int(most):
+  if int(least) <= pwd.count(char) <= int(most):
     pwds += 1
 
 print(pwds)
