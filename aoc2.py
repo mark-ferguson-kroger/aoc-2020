@@ -5,18 +5,18 @@ Created on Wed Dec  2 08:27:54 2020
 @author: Mark Ferguson
 """
 
-import re
+from re import compile
 from collections import Counter
 
 with open('inputs/input2.txt') as fh:
   lines = fh.readlines()
 
 # 11-12 c: ccccgcccccpc
-parser = re.compile(r'^(\d+)-(\d+) (\w): (\w+)$')
+parser = compile(r'^(\d+)-(\d+) (\w): (\w+)$')
 
 pwds = 0
 for line in lines:
-  parsed = re.search(parser, line)
+  parsed = parser.search(line)
   least, most, char, pwd = parsed.groups()  
   stats = Counter(pwd)
   if int(least) <= stats[char] <= int(most):
@@ -26,7 +26,7 @@ print(pwds)
 
 pwds = 0
 for line in lines:
-  parsed = re.search(parser, line)
+  parsed = parser.search(line)
   first, second, char, pwd = parsed.groups()  
   occurrences = 0
   if pwd[int(first)-1] == char:
