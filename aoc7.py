@@ -10,10 +10,7 @@ from functools import reduce
 with open('inputs/input7.txt') as fh:
   lines = [line.strip() for line in fh.readlines()]
 
-# Sub in zero for "no"
-lines = [line.replace(' no ', ' 0 ') for line in lines]
-
-owner = compile(r'(\w+ \w+) bags? contain')
+owner = compile(r'(\w+ \w+) bags contain')
 held = compile(r'(\d+) (\w+ \w+) bag')
 
 rules = {
@@ -22,9 +19,8 @@ rules = {
 }
 
 def contain_gold(rule):
-  contents = rules[rule]
   go_deeper = []
-  for bag in contents:
+  for bag in rules[rule]:
     if 'shiny gold' in bag:
       return True
     else:
