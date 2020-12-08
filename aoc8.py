@@ -5,28 +5,26 @@ Created on Mon Dec  7 23:59:55 2020
 @author: Mark Ferguson
 """
 from re import compile
+from copy import deepcopy
 
 with open('inputs/input8.txt') as fh:
   lines = [line.strip() for line in fh.readlines()]
 
-
 commands = ('acc', 'jmp', 'nop')
-
 com_str = '|'.join(commands)
-
 instructions = compile(f"({com_str})\s+([+-]\d+)")
-
-program = [list(instructions.match(line).groups()) for line in lines]
-
-program = list(zip(range(len(program)), program))
+program = []
+for line in lines:
+  instr, number = instructions.match(line).groups()
+  program.append([instr, int(number)])
 
 visited = []
 accumulator = 0
 line = 0
-while program[line][0] not in visited:
-  instr = program[line][1][0]
-  num = int(program[line][1][1])
-  visited.append(program[line][0])
+while line not in visited:
+  instr = program[line][0]
+  num = program[line][1]
+  visited.append(line)
   
   if instr == 'nop':
     line += 1
@@ -38,49 +36,44 @@ while program[line][0] not in visited:
    
 print(accumulator)
 
-def run(program, swap_line):
+def run(program):
+  lines = len(program)
   visited = []
   accumulator = 0
   line = 0
   while True:
-    if line == len(program):
+    if line == lines:
       return accumulator
-    try:
-      line_no = program[line][0]
-    except IndexError:
+    elif line > lines:
       return False
-    if line_no in visited:
+    if line in visited:
       return False
-    instr = program[line_no][1][0]
-    num = int(program[line_no][1][1])
-    visited.append(line_no)
     
-    if line == swap_line:
-      if instr == 'nop':
-        do = 'jmp'
-      elif instr == 'jmp':
-        do = 'nop'
-      else:
-        do = 'acc'
-    else:
-      do = instr
-    if do == 'nop':
+    instr = program[line][0]
+    num = program[line][1]
+    visited.append(line)
+    
+    if instr == 'nop':
       line += 1
-    elif do == 'jmp':
+    elif instr == 'jmp':
       line += num
     else:
       line += 1
       accumulator += num
+
   return False
 
+swap = {'nop':'jmp', 'jmp':'nop'}
 candidates = []
-for line in program:
-  instr = line[1][0]
+for line_no, line in enumerate(program):
+  instr = line[0]
   if instr in ['nop', 'jmp']:
-    candidates.append(line[0])
+    candidates.append([line_no, swap[instr]])
 
-for switch in candidates:
-  res = run(program, switch)
+for line, instr in candidates:
+  prog = deepcopy(program)
+  prog[line][0] = instr
+  res = run(prog)
   if res:
     print(res)
     break
