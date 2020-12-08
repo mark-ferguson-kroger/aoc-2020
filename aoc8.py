@@ -7,9 +7,7 @@ Created on Mon Dec  7 23:59:55 2020
 from copy import deepcopy
 
 with open('inputs/input8.txt') as fh:
-  lines = [line.strip() for line in fh.readlines()]
-
-program = [line.split() for line in lines]
+  program = [line.strip().split() for line in fh.readlines()]
 
 visited = []
 accumulator = 0
