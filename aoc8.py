@@ -52,8 +52,6 @@ def run(program):
       line += 1
       accumulator += num
 
-  return False
-
 swap = {'nop':'jmp', 'jmp':'nop'}
 candidates = []
 for line_no, line in enumerate(program):
