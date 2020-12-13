@@ -27,11 +27,6 @@ for bus, diff in diffs.items():
 
 print(best_bus * min_diff)
 
-targets = {
-  int(bus):(idx % int(bus)) 
-  for idx, bus in enumerate(bus_list) if bus != 'x'
-}
-
 # Stolen brazenly from 
 # https://rosettacode.org/wiki/Chinese_remainder_theorem#Python_3.6
 from functools import reduce
@@ -54,10 +49,14 @@ def chinese_remainder(n, a):
         sum += a_i * mul_inv(p, n_i) * p
     return sum % prod
  
+targets = {
+  int(bus):(int(bus) - (idx % int(bus)))
+  for idx, bus in enumerate(bus_list) if bus != 'x'
+}
 n_ = []
 a_ = []
 for n, a in targets.items():
   n_.append(n)
-  a_.append(n-a)  
+  a_.append(a)  
 
-x = chinese_remainder(n_, a_) 
+print(chinese_remainder(n_, a_))
