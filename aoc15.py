@@ -18,9 +18,8 @@ data = [8,13,1,0,18,9]
 
 def play(start, n):
   # Start up
-  spoken = start[:-1].copy()
-  last = dict(zip(spoken, range(1,len(spoken)+1)))
   play = len(start)
+  last = dict(zip(start[:-1], range(1, play)))
   say = start[-1]
   while play <= n:
     if say in last:
