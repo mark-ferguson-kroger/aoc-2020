@@ -4,7 +4,6 @@ Created on Tue Dec 15 08:25:52 2020
 
 @author: Mark Ferguson
 """
-from collections import defaultdict
 test_data = {
   436:[0,3,6],
   1:[1,3,2],
