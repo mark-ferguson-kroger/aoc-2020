@@ -74,9 +74,7 @@ for length in range(1, n):
 
 tot = 1
 for rule, slot in mapping.items():
-  print(rule, slot[0])
   if re.match('departure', rule):
-    print('y')
     tot *= mine[slot[0]]
     
 print(tot)
