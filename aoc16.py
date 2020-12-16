@@ -45,12 +45,12 @@ def test_ticket(ticket, tester):
     )
     if not good:
       bad.append(val)
-  return sum(bad)
+  return (not bool(bad)), sum(bad)
 
 tester = make_tester(rules)
-print(sum([test_ticket(ticket, tester) for ticket in tix]))
+print(sum([test_ticket(ticket, tester)[1] for ticket in tix]))
 
-valid = [ticket for ticket in tix if test_ticket(ticket, tester) == 0]
+valid = [ticket for ticket in tix if test_ticket(ticket, tester)[0]]
 valid.append(mine)
 
 n = len(valid[0])
@@ -67,9 +67,9 @@ for rule, test in tester.items():
 # Collapse rules
 lens = {len(slots):rule for rule, slots in mapping.items()}  
 
-for length in range(1, n):
+for length in range(1, n+1):
   value = mapping[lens[length]][0]
-  for longer in range(length + 1, n):
+  for longer in range(length + 1, n + 1):
     mapping[lens[longer]].remove(value)
 
 tot = 1
