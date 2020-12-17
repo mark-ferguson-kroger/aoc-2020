@@ -19,36 +19,16 @@ with open('inputs/input17.txt') as fh:
 
 data.shape = (1, 1, data.shape[0], data.shape[1])
 
-def grow_space(data):
-  w, z, x, y = data.shape
-  new_space = np.zeros((w + 2, z + 2, x + 2, y + 2), int)
-  new_space[1:(w+1), 1:(z+1), 1:(x+1), 1:(y+1)] = data.copy()
-  return new_space
-
-def valid(address, shape):
-  aw, az, ay, ax = address
-  w, z, y, x = shape
-  return (
-    aw >= 0 and aw < w and
-    az >= 0 and az < z and
-    ax >= 0 and ax < x and
-    ay >= 0 and ay < y
-  )
-
 def living_neighbors(address, data):
-  tot = 0
+  W, Z, X, Y = data.shape
   aw, az, ax, ay = address
-  for w in (-1, 0, 1):
-    for z in (-1, 0, 1):
-      for x in (-1, 0, 1):
-        for y in (-1, 0, 1):
-          if (w, z, x, y) == (0, 0, 0, 0):
-            pass
-          else:
-            new_w, new_z, new_x, new_y = aw + w, az + z, ax + x, ay + y
-            if valid((new_w, new_z, new_x, new_y), data.shape):
-              tot += data[new_w, new_z, new_x, new_y]
-  return tot
+  neighbors = data[
+    max((aw-1), 0):min((aw+2), W),
+    max((az-1), 0):min((az+2), Z),
+    max((ax-1), 0):min((ax+2), X),
+    max((ay-1), 0):min((ay+2), Y),
+  ]
+  return np.sum(neighbors) - data[aw, az, ax, ay]
 
 def count_em(data):
   count = np.zeros_like(data, int)
@@ -57,33 +37,45 @@ def count_em(data):
     for z in range(Z):
       for x in range(X):
         for y in range(Y):
-          count[w, z, x, y] = living_neighbors((w,z,x,y), data)
+          count[w, z, x, y] = living_neighbors((w, z,x,y), data)
   return count
   
+def boundaries(address, boundary):
+  for dim in range(len(boundary)):
+    if address[dim] < boundary[dim, 0]:
+      boundary[dim, 0] = address[dim]
+    if address[dim] > boundary[dim, 1]:
+      boundary[dim, 1] = address[dim]
+  return boundary
 
 def update_space(data):
-  old_space = grow_space(data)
+  old_space = np.pad(data, pad_width=1, mode='constant', constant_values=0)
   new_space = np.zeros_like(old_space, int)
-  W, Z, Y, X = new_space.shape
+  W, Z, X, Y = new_space.shape
+  boundary = np.array([[W, 0],[Z, 0],[X, 0],[Y, 0]])
+  nabes = count_em(old_space)
   for w in range(W):
     for z in range(Z):
       for x in range(X):
         for y in range(Y):
-          nabes = living_neighbors((w,z,x,y), old_space)
           if old_space[w, z, x, y] == 1:
-            if nabes in (2,3):
+            if nabes[w, z, x, y] in (2,3):
               new_space[w, z, x, y] = 1
+              boundaries((w,z,x,y), boundary)
             else:
               new_space[w, z, x, y] = 0
           else:
-            if nabes == 3:
+            if nabes[w, z, x, y] == 3:
               new_space[w, z, x, y] = 1
+              boundaries((w,z,x,y), boundary)
             else:
               new_space[w, z, x, y] = 0
-  return new_space
+  w, z, x, y = boundary[0], boundary[1], boundary[2], boundary[3]
+  return new_space[w[0]:(w[1]+1), z[0]:(z[1]+1), x[0]:(x[1]+1), y[0]:(y[1]+1)]
 
 
 for i in range(6):
   data = update_space(data)
   print(i, np.sum(data))
 
+print(time()-t)
