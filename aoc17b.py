@@ -19,25 +19,21 @@ with open('inputs/input17.txt') as fh:
 
 data.shape = (1, 1, data.shape[0], data.shape[1])
 
-def living_neighbors(address, data):
+def active_neighbors(address, data):
   W, Z, X, Y = data.shape
-  aw, az, ax, ay = address
-  neighbors = data[
-    max((aw-1), 0):min((aw+2), W),
-    max((az-1), 0):min((az+2), Z),
-    max((ax-1), 0):min((ax+2), X),
-    max((ay-1), 0):min((ay+2), Y),
+  w, z, x, y = address
+  cube = data[
+    max((w-1), 0):min((w+2), W),
+    max((z-1), 0):min((z+2), Z),
+    max((x-1), 0):min((x+2), X),
+    max((y-1), 0):min((y+2), Y),
   ]
-  return np.sum(neighbors) - data[aw, az, ax, ay]
+  return np.sum(cube) - data[address]
 
 def count_em(data):
   count = np.zeros_like(data, int)
-  W, Z, X, Y = data.shape
-  for w in range(W):
-    for z in range(Z):
-      for x in range(X):
-        for y in range(Y):
-          count[w, z, x, y] = living_neighbors((w, z,x,y), data)
+  for address in np.ndindex(*data.shape):
+          count[address] = active_neighbors(address, data)
   return count
   
 def boundaries(address, boundary):
@@ -54,22 +50,19 @@ def update_space(data):
   W, Z, X, Y = new_space.shape
   boundary = np.array([[W, 0],[Z, 0],[X, 0],[Y, 0]])
   nabes = count_em(old_space)
-  for w in range(W):
-    for z in range(Z):
-      for x in range(X):
-        for y in range(Y):
-          if old_space[w, z, x, y] == 1:
-            if nabes[w, z, x, y] in (2,3):
-              new_space[w, z, x, y] = 1
-              boundaries((w,z,x,y), boundary)
-            else:
-              new_space[w, z, x, y] = 0
-          else:
-            if nabes[w, z, x, y] == 3:
-              new_space[w, z, x, y] = 1
-              boundaries((w,z,x,y), boundary)
-            else:
-              new_space[w, z, x, y] = 0
+  for address in np.ndindex(*old_space.shape):
+    if old_space[address] == 1:
+      if nabes[address] in (2,3):
+        new_space[address] = 1
+        boundary = boundaries(address, boundary)
+      else:
+        new_space[address] = 0
+    else:
+      if nabes[address] == 3:
+        new_space[address] = 1
+        boundary = boundaries(address, boundary)
+      else:
+        new_space[address] = 0
   w, z, x, y = boundary[0], boundary[1], boundary[2], boundary[3]
   return new_space[w[0]:(w[1]+1), z[0]:(z[1]+1), x[0]:(x[1]+1), y[0]:(y[1]+1)]
 
