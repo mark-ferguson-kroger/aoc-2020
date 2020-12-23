@@ -20,17 +20,14 @@ class Circle:
     self.loc = {}
     for i, c in enumerate(data):
       self.loc[c] = i
-      try:
-        self.next[c] = data[i+1]
-      except IndexError:
-        self.next[c] = data[0]
+      try: self.next[c] = data[i+1]
+      except IndexError: self.next[c] = data[0]
 
   def destination(self, pulled):
     target = self.head - 1
     if target == 0: target = self.max
-    while target in pulled:
-      target -= 1
-      if target == 0: target = self.max
+    while target in pulled: target -= 1
+    if target == 0: target = self.max
     return target
 
   def move(self):
@@ -41,21 +38,9 @@ class Circle:
       here = self.next[here]
     dest = self.destination(pulled)
     self.next[self.head] = self.next[pulled[-1]]
-    nxt = self.next[dest]
-    self.next[dest] = pulled[0]
-    self.next[pulled[-1]] = nxt
+    self.next[dest], self.next[pulled[-1]] = pulled[0], self.next[dest]
     self.head = self.next[self.head]
     
-  def show(self):
-    if self.max > 10:
-      return None
-    out = ''
-    here = self.head
-    while self.next[here] != self.head:
-      out += str(here)
-      here = self.next[here]
-    return out + str(here)
-  
   def output(self):
     if self.max > 10:
       return None
