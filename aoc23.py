@@ -9,7 +9,6 @@ class Circle:
     data = list(range(1,n+1))
     for i, c in enumerate(cups):
       data[i] = int(c)
-    self.cups = data
     self.head = data[0]
     self.max = n
     self.next = {}
