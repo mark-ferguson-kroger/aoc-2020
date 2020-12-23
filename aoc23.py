@@ -17,9 +17,7 @@ class Circle:
     self.head = data[0]
     self.max = n
     self.next = {}
-    self.loc = {}
     for i, c in enumerate(data):
-      self.loc[c] = i
       try: self.next[c] = data[i+1]
       except IndexError: self.next[c] = data[0]
 
