@@ -4,10 +4,6 @@ Created on Wed Dec 23 10:53:17 2020
 
 @author: Mark Ferguson
 """
-from time import time
-test = '389125467'
-data = '653427918'
-
 class Circle:
   def __init__(self, cups, n=9):
     data = list(range(1,n+1))
@@ -51,18 +47,13 @@ class Circle:
   
   def gold(self):
     return self.next[1] * self.next[self.next[1]]
-      
-  
+
+data = '653427918'
 circle = Circle(data)
-t = time()
 for i in range(100):
   circle.move()
 print(circle.silver())
-t = time()
 circle = Circle(data, n=1_000_000)
-print(time() - t)
-t = time()
 for i in range(10_000_000):
   circle.move()
 print(circle.gold())
-print(time() - t)
