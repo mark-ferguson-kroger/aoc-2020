@@ -39,7 +39,7 @@ class Circle:
     self.next[dest], self.next[pulled[-1]] = pulled[0], self.next[dest]
     self.head = self.next[self.head]
     
-  def output(self):
+  def silver(self):
     if self.max > 10:
       return None
     out = ''
@@ -49,7 +49,7 @@ class Circle:
       here = self.next[here]
     return out + str(here)
   
-  def star(self):
+  def gold(self):
     return self.next[1] * self.next[self.next[1]]
       
   
@@ -57,12 +57,12 @@ circle = Circle(data)
 t = time()
 for i in range(100):
   circle.move()
-print(circle.output())
-
+print(circle.silver())
+t = time()
 circle = Circle(data, n=1_000_000)
-
+print(time() - t)
 t = time()
 for i in range(10_000_000):
   circle.move()
-print(circle.star())
+print(circle.gold())
 print(time() - t)
