@@ -9,7 +9,7 @@ from matplotlib.patches import RegularPolygon
 from collections import defaultdict
 import numpy as np
 from re import compile
-with open('inputs/input24.txt') as fh:
+with open('inputs/test24.txt') as fh:
   lines = [line.strip() for line in fh.readlines()]
 
 pattern = compile('(e|se|sw|w|nw|ne)')
@@ -19,7 +19,7 @@ for line in lines:
 
 class Floor:
   
-  def __init__(self, layers=15):
+  def __init__(self, layers=5):
     self.tiles = {(0,0,0):0}
     self.limits = ((0,0), (0,0), (0,0))
     self.active = {(0,0,0):0}
@@ -168,7 +168,7 @@ class Floor:
       hex = RegularPolygon(
         (x, y),
         numVertices=6, 
-        radius=scale/2, 
+        radius=scale/np.sqrt(3), 
         orientation=np.radians(60), 
         facecolor=get_color(location), 
         alpha=1, 
