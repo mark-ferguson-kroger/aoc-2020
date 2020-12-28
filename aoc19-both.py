@@ -24,53 +24,37 @@ parse = {
 for token in data:
   if token.type in parse:
     val = parse[token.type](token.string)
-    if val is not None:
-      rule_input[token.start[0]].append(val)
+    if val is not None: rule_input[token.start[0]].append(val)
 
 rules = {rule[0]:rule[2:] for rule in rule_input.values()}
 
-def concat(a, b): return str(a) + str(b)
-
 def get_alternatives(rule):
-  alts = []
-  remainder = rule.copy()
+  alts, remainder = [], rule.copy()
   while True:
-    try:
-      or_ = remainder.index('|')
+    try: or_ = remainder.index('|')
     except ValueError:
       alts.append(remainder)
       break
     alts.append(remainder[:or_])
     remainder = remainder[(or_ + 1):]
   return alts  
-    
-def no_alts(rule):
-  return reduce(concat, [pattern(ix, rules) for ix in rule])  
 
-def my_join(lst):
+concat = lambda a, b: str(a) + str(b)
+no_alts = lambda rule: reduce(concat, [pattern(ix, rules) for ix in rule])
+
+def has_alts(rule):
   ret = ''
-  for sub_list in lst:
+  for sub_list in get_alternatives(rule):
     ret += no_alts(sub_list)
     ret += '|'
-  return ret[:-1]
+  return '(?:' + ret[:-1] + ')'
 
 def pattern(idx, rules):
-  if rules[idx][0] == 'a':
-    return 'a'
-  if rules[idx][0] == 'b':
-    return 'b'
-  try:
-    or_ = rules[idx].index('|')
-  except ValueError:
-    return no_alts(rules[idx])
-  return reduce(
-    concat,
-    [
-      '(?:',
-      my_join(get_alternatives(rules[idx])),
-      ')'
-    ],
-    )
+  if rules[idx][0] == 'a': return 'a'
+  if rules[idx][0] == 'b': return 'b'
+  if '|' in rules[idx]:
+    return has_alts(rules[idx])
+  return no_alts(rules[idx])
 
 tot = 0
 matcher = re.compile(pattern(0, rules))
@@ -79,21 +63,19 @@ for string in to_check:
   if match:
     if match.group() == string:
       tot += 1
-      
+
 print(tot)
 
 n = 5
 rule8 = []
 for i in range(1,n+1):
   rule8.extend([42]*i)
-  if i < n:
-    rule8.append('|')
+  if i < n: rule8.append('|')
 rule11 = []
 for i in range(1,n+1):
   rule11.extend([42]*i)
   rule11.extend([31]*i)
-  if i < n:
-    rule11.append('|')
+  if i < n: rule11.append('|')
 
 rules[8] = rule8
 rules[11] = rule11
