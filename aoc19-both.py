@@ -45,25 +45,20 @@ no_alts = lambda rule: reduce(concat, [pattern(ix, rules) for ix in rule])
 def has_alts(rule):
   ret = ''
   for sub_list in get_alternatives(rule):
-    ret += no_alts(sub_list)
-    ret += '|'
+    ret += (no_alts(sub_list) + '|')
   return '(?:' + ret[:-1] + ')'
 
 def pattern(idx, rules):
   if rules[idx][0] == 'a': return 'a'
   if rules[idx][0] == 'b': return 'b'
-  if '|' in rules[idx]:
-    return has_alts(rules[idx])
+  if '|' in rules[idx]: return has_alts(rules[idx])
   return no_alts(rules[idx])
 
 tot = 0
 matcher = re.compile(pattern(0, rules))
 for string in to_check:
   match = matcher.match(string)
-  if match:
-    if match.group() == string:
-      tot += 1
-
+  if match and match.group() == string: tot += 1
 print(tot)
 
 n = 5
@@ -83,10 +78,5 @@ tot = 0
 matcher = re.compile(pattern(0, rules))
 for string in to_check:
   match = matcher.match(string)
-  if match:
-    if match.group() == string:
-      tot += 1
-      
+  if match and match.group() == string: tot += 1      
 print(tot)
-
-
